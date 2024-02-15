@@ -1,0 +1,485 @@
+@font-face {
+  font-family: "InnerIcons";
+  src: url("assets/fonts/TimeUpIcons-regular.otf");
+  font-weight: 500;
+}
+
+@font-face {
+  font-family: "InnerIcons";
+  src: url("assets/fonts/TimeUpIcons-light.otf");
+  font-weight: 300;
+}
+
+:root {
+  font-family: Inter, Avenir, Helvetica, Arial, sans-serif;
+  font-size: 16px;
+  line-height: 24px;
+  font-weight: 400;
+
+  color: #0f0f0fd6;
+  background-color: transparent;
+
+  font-synthesis: none;
+  text-rendering: optimizeLegibility;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+  -webkit-text-size-adjust: 100%;
+
+  user-select: none;
+}
+
+::-webkit-scrollbar {
+  width: 0;
+  height: 0;
+  background-color: transparent;
+}
+
+::-webkit-scrollbar-thumb {
+  background-color: transparent;
+}
+
+::-webkit-scrollbar-thumb:hover {
+  background-color: transparent;
+}
+
+audio {
+  display: none;
+}
+
+body {
+  display: grid;
+  margin: 0;
+  padding: 0;
+  height: 100vh;
+  grid-template-rows: auto 1fr auto;
+  overflow: hidden;
+}
+
+.container {
+  max-height: calc(height - 96px);
+  overflow-y: scroll;
+  margin-inline: 8px;
+  user-select: none;
+}
+
+.row {
+  display: flex;
+  justify-content: center;
+}
+
+.flex-space {
+  flex-grow: 1;
+}
+
+.notification-background {
+  opacity: 0;
+  position: absolute;
+  z-index: 2;
+  pointer-events: none;
+  align-self: center;
+  justify-self: center;
+  height: 100%;
+  width: 100%;
+  background-color: #396cd8;
+  clip-path: circle(0 at 50% 50%);
+  transition: opacity 0.25s, clip-path 0.25s;
+}
+
+.notification-content {
+  opacity: 0;
+  pointer-events: none;
+  position: absolute;
+  z-index: 3;
+  inset-block: 40px 0;
+  width: 100%;
+  clip-path: circle(0 at 50% 50%);
+  transition: opacity 0.25s, clip-path 0.25s;
+}
+
+.notification-content>div {
+  position: absolute;
+  inset-block: 40px 0;
+  width: 100%;
+  margin-bottom: 96px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-direction: column;
+}
+
+.notifi-animation {
+  animation: rotate 1s infinite;
+  animation-timing-function: cubic-bezier(0, 0.25, 0.25, 2);
+  transform-origin: 50% 53%;
+}
+
+@keyframes rotate {
+  0% {
+    transform: rotateZ(0);
+  }
+
+  70% {
+    transform: rotateZ(0);
+  }
+
+  75% {
+    transform: rotateZ(15deg);
+  }
+
+  85% {
+    transform: rotateZ(-15deg);
+  }
+
+  100% {
+    transform: rotateZ(0);
+  }
+}
+
+.notification-text {
+  font-size: 1.2em;
+  color: #f6f6f6d6;
+}
+
+.notification-button {
+  cursor: pointer;
+  margin-top: 8px;
+  color: #f6f6f6d6;
+  font-size: 1.3em;
+  border-radius: 20px;
+  padding: 8px 32px;
+  transition: background-color 0.2s, box-shadow 0.25s;
+  background-color: #fff2;
+}
+
+.notification-button:hover {
+  background-color: #fff3;
+  box-shadow: 0 2px 8px 0 #1530692f;
+}
+
+.notification-button:active {
+  background-color: #fff4;
+}
+
+.titlebar {
+  height: 40px;
+  display: flex;
+  justify-content: flex-end;
+}
+
+.titlebar-title {
+  font-size: 1em;
+  font-weight: 500;
+  font-family: inherit;
+  align-self: center;
+  top: 12px;
+  display: block;
+  justify-content: flex-start;
+  position: fixed;
+  left: 16px;
+  pointer-events: none;
+}
+
+.titlebar-button {
+  display: inline-flex;
+  justify-content: center;
+  align-items: center;
+  width: 48px;
+  transition: background-color 0.2s;
+}
+
+.titlebar-closebutton {
+  display: inline-flex;
+  justify-content: center;
+  align-items: center;
+  width: 64px;
+  transition: background-color 0.2s;
+}
+
+.titlebar-button:hover {
+  background: #bbb4;
+}
+
+.titlebar-button:active {
+  background: #aaa6;
+}
+
+.titlebar-closebutton:hover {
+  color: white;
+  background: red;
+}
+
+.titlebar-closebutton:active {
+  color: white;
+  background: lightcoral;
+}
+
+.toolbar {
+  font-size: 1.6em;
+  font-family: "InnerIcons", sans-serif;
+  display: inline-flex;
+  padding: 8px;
+}
+
+.toolbar-item {
+  cursor: pointer;
+  border-radius: 8px;
+  padding: 8px;
+  transition: background-color 0.2s;
+}
+
+.toolbar-item:hover {
+  background-color: #bbb4;
+}
+
+.toolbar-item:active {
+  background-color: #aaa6;
+}
+
+.text {
+  line-height: 50%;
+  font-size: 1em;
+  font-weight: 500;
+  font-family: inherit;
+}
+
+.icons {
+  line-height: 50%;
+  font-size: 1em;
+  font-weight: 500;
+  font-family: "InnerIcons";
+  transition: opacity 0.25s, filter 0.25s;
+}
+
+.card {
+  border-radius: 12px;
+  background-color: white;
+  padding: 16px;
+}
+
+.button-flat {
+  outline-offset: 4px;
+  padding: 16px;
+  border-radius: 8px;
+  transition: background-color 0.2s;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.button-flat:hover {
+  background-color: white;
+}
+
+.button-flat:active {
+  background-color: #0001;
+}
+
+.button-round {
+  cursor: pointer;
+  outline-offset: 4px;
+  padding: 16px;
+  border-radius: 50%;
+  transition: background-color 0.2s;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.button-round:hover {
+  background-color: #bbb4;
+}
+
+.button-round:active {
+  background-color: #aaa6;
+}
+
+.page {
+  position: absolute;
+  inset-inline: 8px;
+  inset-block: 48px 60px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: all 0.25s cubic-bezier(0, 0.6, 0.4, 1);
+  border-radius: 12px;
+  overflow-y: scroll;
+}
+
+.task-input {
+  width: calc(100% - 46px);
+  border-radius: 8px;
+  margin: 8px;
+  padding-inline: 4px;
+  font-size: 1em;
+  font-weight: 500;
+  font-family: inherit;
+  text-overflow: ellipsis;
+  color: #0f0f0f;
+  border: none;
+  outline: none;
+  box-shadow: 0 0 0 1px gray;
+  height: 32px;
+  background-color: transparent;
+  transition: opacity 0.25s, filter 0.25s, background-color 0.15s, box-shadow 0.2s, padding-inline 0.2s;
+}
+
+.task-input:focus {
+  box-shadow: 0 0 0 4px #396cd8;
+  background-color: white;
+}
+
+.task-input:disabled {
+  pointer-events: none;
+  padding: 0;
+  box-shadow: none;
+}
+
+.list {
+  border-radius: 12px;
+  background-color: white;
+  padding: 0;
+  margin: auto;
+}
+
+.list-item {
+  display: flex;
+  align-items: center;
+  margin-top: 4;
+  padding: 2px;
+  padding-left: 12px;
+  border-radius: 12px;
+  width: auto;
+  height: 40px;
+  background-color: white;
+  font-size: 1.1em;
+  overflow: hidden;
+  filter: blur(8px);
+  opacity: 0;
+  transform: scale(0.8);
+  transition: background-color 0.2s, transform 0.25s, opacity 0.25s, filter 0.25s;
+}
+
+.list-item:hover {
+  background-color: #e8ecf5;
+}
+
+input::-webkit-outer-spin-button {
+  appearance: none;
+}
+
+input::-webkit-inner-spin-button {
+  appearance: none;
+}
+
+.clock {
+  border-radius: 12px;
+  padding: 16px;
+  background-color: white;
+  box-shadow: 0 2px 4px 0 #0f2f4f2d;
+  display: inline-flex;
+}
+
+.clock-input {
+  width: 56px;
+  font-size: 3em;
+  font-weight: 500;
+  outline: none;
+  border: none;
+  margin: 0;
+  padding: 0;
+  transition: transform 0.2s;
+  background-color: transparent;
+}
+
+.clock-input:hover {
+  color: #396cd8;
+}
+
+.clock-input:focus {
+  color: #396cd8;
+  background-color: #e8ecf5;
+}
+
+.clock-input:disabled {
+  pointer-events: none;
+}
+
+@media (prefers-color-scheme: dark) {
+  :root {
+    font-weight: 300;
+    color: #f6f6f6d6;
+  }
+
+  .titlebar-button:hover {
+    background-color: #4444;
+  }
+
+  .titlebar-button:active {
+    background-color: #4e4e4e66;
+  }
+
+  .titlebar-closebutton:active {
+    background-color: darkred;
+  }
+
+  .toolbar-item:hover {
+    background-color: #4444;
+  }
+
+  .toolbar-item:active {
+    background-color: #4e4e4e66;
+  }
+
+  .task-input {
+    color: #f6f6f6d6;
+  }
+
+  .task-input:focus {
+    background-color: #0f0f0f98;
+  }
+
+  .card {
+    background-color: #262626;
+  }
+
+  .button-flat:hover {
+    background-color: #DEF1;
+  }
+
+  .button-flat:active {
+    background-color: #DEF2;
+  }
+
+  .button-round:hover {
+    background-color: #4444;
+  }
+
+  .button-round:active {
+    background-color: #4e4e4e66;
+  }
+
+  .list {
+    background-color: #262626;
+  }
+
+  .list-item {
+    background-color: #262626;
+  }
+
+  .list-item:hover {
+    background-color: #282b32;
+  }
+
+  .clock {
+    background-color: #262626;
+    box-shadow: 0 2px 4px 0 #0002;
+  }
+
+  .clock-input {
+    color: #f6f6f6d6;
+  }
+
+  .clock-input:focus {
+    background-color: #1b212e;
+  }
+}

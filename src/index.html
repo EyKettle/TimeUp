@@ -1,0 +1,98 @@
+<!doctype html>
+<html lang="zh-CN">
+  <head>
+    <meta charset="UTF-8" />
+    <link rel="stylesheet" href="styles.css" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Time Up</title>
+    <script type="module" src="TaskModule/taskdata.js"></script>
+    <script type="module" src="/main.js" defer></script>
+    <style>
+      .logo.vanilla:hover {
+        filter: drop-shadow(0 0 2em #ffe21c);
+      }
+    </style>
+  </head>
+
+  <body>
+    <div class="notification-content" id="notifi-content">
+      <audio id="sound-player">
+        <source src="assets/audio/TaskFinish.wav" type="audio/wav">
+      </audio>
+      <div>
+        <label class="icons notifi-animation" style="color: #f6f6f6d6; font-size: 4em; line-height: 100%; margin-bottom: 8px;">T</label>
+        <label class="notification-text">计时结束</label>
+        <div class="notification-button" id="notifi-check">关闭</div>
+      </div>
+    </div>
+    <div class="notification-background" id="notifi-back"></div>
+    <div data-tauri-drag-region class="titlebar">
+      <label class="titlebar-title" id="Titlebar-Title">任务列表</label>
+      <div class="titlebar-button" id="titlebar-minimize" style="
+        font-size: 0.8em;">
+        &#x2014;
+      </div>
+      <div class="titlebar-closebutton" id="titlebar-close">
+        &#x2715;
+      </div>
+    </div>
+    <div class="container">
+      <div class="page" id="page0" style="z-index: 0;">
+        <ol class="list" id="taskList">
+        </ol>
+      </div>
+      <div class="page" id="page1" style="z-index: 1; opacity: 0; pointer-events: none; transform: scale(1.4); filter: blur(4px);
+        flex-direction: column;">
+        <div class="clock" style="margin-bottom: 16px;">
+          <script>
+            function formatClock(input) {
+              let value = parseInt(input.value);
+              input.value = input.value == '' ? '00' : value.toString().substr(value.toString().length - 2, 2);
+              if (value > 59) {
+                input.value = '59';
+                return;
+              }
+              if (value.toString().length == 1) {
+                input.value = '0' + value.toString();
+              }
+            }
+          </script>
+          <input type="number" oninput="formatClock(this)" value="10" class="clock-input" id="clock-min"></input>
+          <label style="width: 16px; font-size: 3em; align-self: center; translate: 0 -15%;">:</label>
+          <input type="number" oninput="formatClock(this)" value="00" class="clock-input" id="clock-s"></input>
+        </div>
+        <div class="button-round icons" style="font-size: 2em; width: 48px; height: 48px;" id="timerPlay">p</div>
+      </div>
+      <div class="page" id="page2" style="z-index: 1; opacity: 0; pointer-events: none; transform: scale(1.4); filter: blur(4px);
+      flex-direction: column;">
+        <div class="card" style="position: fixed; inset-inline: 0;">
+          <div>
+            <label class="text" style="font-weight: 600; font-size: 1.6em; line-height: 150%;">TimeUp</label>
+            <img src="assets/icon.ico" style="position: fixed; right: 0; margin-top: -8px; height: 32%;">
+          </div>
+          <div style="color: #742626;">
+            <label class="text">DEV </label>
+            <label class="text">0.0.7</label>
+          </div>
+        </div>
+      </div>
+    </div>
+    <div class="toolbar">
+      <div class="toolbar-item" id="taskAdd">n</div>
+      <div class="flex-space" id="tipbox" style="
+        position: relative;
+        font-size: 0.7em;
+        text-align: center;
+        vertical-align: middle;
+        align-self: center;
+        background-color: #ADF;
+        border-radius: 8px;
+        padding: 4px; padding-bottom: 9px;
+        margin-left: 8px; margin-right: 8px;
+        transform: translateY(64px);
+        transition: transform 0.25s cubic-bezier(0, 0, 0, 1);">松开以固定</div>
+      <div class="toolbar-item" id="pageTimer">T</div>
+      <div class="toolbar-item" id="pageSetting">S</div>
+    </div>
+  </body>
+</html>
