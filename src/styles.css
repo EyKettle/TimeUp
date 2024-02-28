@@ -10,6 +10,11 @@
   font-weight: 300;
 }
 
+@font-face {
+  font-family: "Icons";
+  src: url("assets/fonts/TimeUpIcons.ttf");
+}
+
 :root {
   font-family: Inter, Avenir, Helvetica, Arial, sans-serif;
   font-size: 16px;
@@ -17,7 +22,7 @@
   font-weight: 400;
 
   color: #0f0f0fd6;
-  background-color: transparent;
+  background-color: #f6f6f66d;
 
   font-synthesis: none;
   text-rendering: optimizeLegibility;
@@ -26,6 +31,7 @@
   -webkit-text-size-adjust: 100%;
 
   user-select: none;
+  --autocolormode: true;
 }
 
 ::-webkit-scrollbar {
@@ -57,7 +63,7 @@ body {
 
 .container {
   max-height: calc(height - 96px);
-  overflow-y: scroll;
+  max-width: calc(100% - 48px);
   margin-inline: 8px;
   user-select: none;
 }
@@ -67,6 +73,46 @@ body {
   justify-content: center;
 }
 
+ol {
+  appearance: none;
+  margin: 0;
+  padding: 0;
+}
+
+li {
+  list-style: none;
+}
+
+li:hover {
+  background-color: #0f0f0f1d;
+}
+
+button {
+  font-size: 1em;
+  padding: 8px 16px;
+  border-radius: 9px;
+  appearance: none;
+  outline: none;
+  border: #0f0f0f0d;
+  background-color: transparent;
+  transition: background-color 0.16s
+}
+
+button:disabled {
+  pointer-events: none;
+  color: #0f0f0f5d;
+}
+
+button:hover {
+  background-color: #0f0f0f0d;
+}
+
+button.active {
+  color: #f6f6f6d6;
+  background-color: #396cd8;
+  pointer-events: none;
+}
+
 .flex-space {
   flex-grow: 1;
 }
@@ -74,7 +120,7 @@ body {
 .notification-background {
   opacity: 0;
   position: absolute;
-  z-index: 2;
+  z-index: 11;
   pointer-events: none;
   align-self: center;
   justify-self: center;
@@ -89,7 +135,7 @@ body {
   opacity: 0;
   pointer-events: none;
   position: absolute;
-  z-index: 3;
+  z-index: 12;
   inset-block: 40px 0;
   width: 100%;
   clip-path: circle(0 at 50% 50%);
@@ -162,8 +208,12 @@ body {
 
 .titlebar {
   height: 40px;
+  width: 100%;
   display: flex;
   justify-content: flex-end;
+  position: absolute;
+  top: 0;
+  right: 0;
 }
 
 .titlebar-title {
@@ -176,7 +226,18 @@ body {
   justify-content: flex-start;
   position: fixed;
   left: 16px;
-  pointer-events: none;
+  margin: -4px -8px;
+  padding: 4px 8px;
+  border-radius: 5px;
+  transition: background-color 0.16s;
+}
+
+.titlebar-title:hover {
+  background-color: #0f0f0f0d;
+}
+
+.titlebar-title:active {
+  background-color: #0f0f0f16;
 }
 
 .titlebar-button {
@@ -196,11 +257,11 @@ body {
 }
 
 .titlebar-button:hover {
-  background: #bbb4;
+  background: #0f0f0f0d;
 }
 
 .titlebar-button:active {
-  background: #aaa6;
+  background: #0f0f0f16;
 }
 
 .titlebar-closebutton:hover {
@@ -218,6 +279,8 @@ body {
   font-family: "InnerIcons", sans-serif;
   display: inline-flex;
   padding: 8px;
+  position: absolute;
+  bottom: 0;
 }
 
 .toolbar-item {
@@ -228,11 +291,11 @@ body {
 }
 
 .toolbar-item:hover {
-  background-color: #bbb4;
+  background-color: #0f0f0f10;
 }
 
 .toolbar-item:active {
-  background-color: #aaa6;
+  background-color: #0f0f0f1d;
 }
 
 .text {
@@ -252,8 +315,13 @@ body {
 
 .card {
   border-radius: 12px;
-  background-color: white;
+  background-color: #f6f6f66d;
+  box-shadow: 0 2px 4px 0 #0f2f4f2d;
   padding: 16px;
+}
+
+.card.solidback {
+  background-color: #f6f6f6;
 }
 
 .button-flat {
@@ -305,7 +373,7 @@ body {
   overflow-y: scroll;
 }
 
-.task-input {
+.inputBox {
   width: calc(100% - 46px);
   border-radius: 8px;
   margin: 8px;
@@ -323,12 +391,12 @@ body {
   transition: opacity 0.25s, filter 0.25s, background-color 0.15s, box-shadow 0.2s, padding-inline 0.2s;
 }
 
-.task-input:focus {
+.inputBox:focus {
   box-shadow: 0 0 0 4px #396cd8;
   background-color: white;
 }
 
-.task-input:disabled {
+.inputBox:disabled {
   pointer-events: none;
   padding: 0;
   box-shadow: none;
@@ -336,7 +404,7 @@ body {
 
 .list {
   border-radius: 12px;
-  background-color: white;
+  background-color: #f6f6f66d;
   padding: 0;
   margin: auto;
 }
@@ -350,7 +418,7 @@ body {
   border-radius: 12px;
   width: auto;
   height: 40px;
-  background-color: white;
+  background-color: transparent;
   font-size: 1.1em;
   overflow: hidden;
   filter: blur(8px);
@@ -360,7 +428,7 @@ body {
 }
 
 .list-item:hover {
-  background-color: #e8ecf5;
+  background-color: #f6f6f6ff;
 }
 
 input::-webkit-outer-spin-button {
@@ -374,7 +442,7 @@ input::-webkit-inner-spin-button {
 .clock {
   border-radius: 12px;
   padding: 16px;
-  background-color: white;
+  background-color: #f6f6f66d;
   box-shadow: 0 2px 4px 0 #0f2f4f2d;
   display: inline-flex;
 }
@@ -404,82 +472,102 @@ input::-webkit-inner-spin-button {
   pointer-events: none;
 }
 
-@media (prefers-color-scheme: dark) {
-  :root {
-    font-weight: 300;
-    color: #f6f6f6d6;
-  }
+/* Dark Mode */
 
-  .titlebar-button:hover {
-    background-color: #4444;
-  }
+.dark button {
+  color: #f6f6f6d6;
+}
 
-  .titlebar-button:active {
-    background-color: #4e4e4e66;
-  }
+.dark button:disabled {
+  color: #f6f6f63d;
+}
 
-  .titlebar-closebutton:active {
-    background-color: darkred;
-  }
+.dark button:hover {
+  background-color: #f6f6f60d;
+}
 
-  .toolbar-item:hover {
-    background-color: #4444;
-  }
+.dark button:active {
+  background-color: #f6f6f616;
+}
 
-  .toolbar-item:active {
-    background-color: #4e4e4e66;
-  }
+.dark .titlebar-title:hover {
+  background-color: #f6f6f60d;
+}
 
-  .task-input {
-    color: #f6f6f6d6;
-  }
+.dark .titlebar-title:active {
+  background-color: #f6f6f616;
+}
 
-  .task-input:focus {
-    background-color: #0f0f0f98;
-  }
+.dark .titlebar-button:hover {
+  background-color: #f6f6f606;
+}
 
-  .card {
-    background-color: #262626;
-  }
+.dark .titlebar-button:active {
+  background-color: #f6f6f610;
+}
 
-  .button-flat:hover {
-    background-color: #DEF1;
-  }
+.dark .titlebar-closebutton:active {
+  background-color: darkred;
+}
 
-  .button-flat:active {
-    background-color: #DEF2;
-  }
+.dark .toolbar-item:hover {
+  background-color: #f6f6f606;
+}
 
-  .button-round:hover {
-    background-color: #4444;
-  }
+.dark .toolbar-item:active {
+  background-color: #f6f6f610;
+}
 
-  .button-round:active {
-    background-color: #4e4e4e66;
-  }
+.dark .inputBox {
+  color: #f6f6f6d6;
+}
 
-  .list {
-    background-color: #262626;
-  }
+.dark .inputBox:focus {
+  background-color: #0f0f0f98;
+}
 
-  .list-item {
-    background-color: #262626;
-  }
+.dark .card {
+  background-color: #f6f6f610;
+  box-shadow: 0 2px 4px 0 #0002;
+}
 
-  .list-item:hover {
-    background-color: #282b32;
-  }
+.dark .card.solidback {
+  background-color: #2e2e2e;
+}
 
-  .clock {
-    background-color: #262626;
-    box-shadow: 0 2px 4px 0 #0002;
-  }
+.dark .button-flat:hover {
+  background-color: #DEF1;
+}
 
-  .clock-input {
-    color: #f6f6f6d6;
-  }
+.dark .button-flat:active {
+  background-color: #DEF2;
+}
 
-  .clock-input:focus {
-    background-color: #1b212e;
-  }
+.dark .button-round:hover {
+  background-color: #4444;
+}
+
+.dark .button-round:active {
+  background-color: #4e4e4e66;
+}
+
+.dark .list {
+  background-color: #f6f6f610;
+}
+
+.dark .list-item:hover {
+  background-color: #f6f6f610;
+}
+
+.dark .clock {
+  background-color: #f6f6f610;
+  box-shadow: 0 2px 4px 0 #0002;
+}
+
+.dark .clock-input {
+  color: #f6f6f6d6;
+}
+
+.dark .clock-input:focus {
+  background-color: #1b212e;
 }

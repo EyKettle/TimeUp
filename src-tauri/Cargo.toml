@@ -1,6 +1,6 @@
 [package]
 name = "timeup"
-version = "0.0.7"
+version = "0.0.9"
 description = "Time Up"
 authors = ["EyKettle"]
 license = ""

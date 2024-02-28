@@ -1,85 +1,32 @@
 <!doctype html>
 <html lang="zh-CN">
-  <head>
-    <meta charset="UTF-8" />
-    <link rel="stylesheet" href="styles.css" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>Time Up</title>
-    <script type="module" src="TaskModule/taskdata.js"></script>
-    <script type="module" src="/main.js" defer></script>
-    <style>
-      .logo.vanilla:hover {
-        filter: drop-shadow(0 0 2em #ffe21c);
-      }
-    </style>
-  </head>
 
-  <body>
-    <div class="notification-content" id="notifi-content">
-      <audio id="sound-player">
-        <source src="assets/audio/TaskFinish.wav" type="audio/wav">
-      </audio>
-      <div>
-        <label class="icons notifi-animation" style="color: #f6f6f6d6; font-size: 4em; line-height: 100%; margin-bottom: 8px;">T</label>
-        <label class="notification-text">计时结束</label>
-        <div class="notification-button" id="notifi-check">关闭</div>
-      </div>
+<head>
+  <meta charset="UTF-8" />
+  <link rel="stylesheet" href="styles.css" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Time Up</title>
+  <script type="module" src="TaskModule/taskdata.js"></script>
+  <script type="module" src="CoreModule/coredata.js"></script>
+  <script type="module" src="/main.js" defer></script>
+</head>
+
+<body>
+  <div class="notification-content" id="notifi-content">
+    <audio id="sound-player">
+      <source src="assets/audio/TaskFinish.wav" type="audio/wav">
+    </audio>
+    <div>
+      <label class="icons notifi-animation"
+        style="color: #f6f6f6d6; font-size: 4em; line-height: 100%; margin-bottom: 8px;">T</label>
+      <label class="notification-text">计时结束</label>
+      <div class="notification-button" id="notifi-check">关闭</div>
     </div>
-    <div class="notification-background" id="notifi-back"></div>
-    <div data-tauri-drag-region class="titlebar">
-      <label class="titlebar-title" id="Titlebar-Title">任务列表</label>
-      <div class="titlebar-button" id="titlebar-minimize" style="
-        font-size: 0.8em;">
-        &#x2014;
-      </div>
-      <div class="titlebar-closebutton" id="titlebar-close">
-        &#x2715;
-      </div>
-    </div>
-    <div class="container">
-      <div class="page" id="page0" style="z-index: 0;">
-        <ol class="list" id="taskList">
-        </ol>
-      </div>
-      <div class="page" id="page1" style="z-index: 1; opacity: 0; pointer-events: none; transform: scale(1.4); filter: blur(4px);
-        flex-direction: column;">
-        <div class="clock" style="margin-bottom: 16px;">
-          <script>
-            function formatClock(input) {
-              let value = parseInt(input.value);
-              input.value = input.value == '' ? '00' : value.toString().substr(value.toString().length - 2, 2);
-              if (value > 59) {
-                input.value = '59';
-                return;
-              }
-              if (value.toString().length == 1) {
-                input.value = '0' + value.toString();
-              }
-            }
-          </script>
-          <input type="number" oninput="formatClock(this)" value="10" class="clock-input" id="clock-min"></input>
-          <label style="width: 16px; font-size: 3em; align-self: center; translate: 0 -15%;">:</label>
-          <input type="number" oninput="formatClock(this)" value="00" class="clock-input" id="clock-s"></input>
-        </div>
-        <div class="button-round icons" style="font-size: 2em; width: 48px; height: 48px;" id="timerPlay">p</div>
-      </div>
-      <div class="page" id="page2" style="z-index: 1; opacity: 0; pointer-events: none; transform: scale(1.4); filter: blur(4px);
-      flex-direction: column;">
-        <div class="card" style="position: fixed; inset-inline: 0;">
-          <div>
-            <label class="text" style="font-weight: 600; font-size: 1.6em; line-height: 150%;">TimeUp</label>
-            <img src="assets/icon.ico" style="position: fixed; right: 0; margin-top: -8px; height: 32%;">
-          </div>
-          <div style="color: #742626;">
-            <label class="text">DEV </label>
-            <label class="text">0.0.7</label>
-          </div>
-        </div>
-      </div>
-    </div>
-    <div class="toolbar">
-      <div class="toolbar-item" id="taskAdd">n</div>
-      <div class="flex-space" id="tipbox" style="
+  </div>
+  <div class="notification-background" id="notifi-back"></div>
+  <div class="toolbar" style="width: calc(100% - 16px);">
+    <div class="toolbar-item" id="taskAdd">n</div>
+    <div class="flex-space" id="tipbox" style="
         position: relative;
         font-size: 0.7em;
         text-align: center;
@@ -91,8 +38,118 @@
         margin-left: 8px; margin-right: 8px;
         transform: translateY(64px);
         transition: transform 0.25s cubic-bezier(0, 0, 0, 1);">松开以固定</div>
-      <div class="toolbar-item" id="pageTimer">T</div>
-      <div class="toolbar-item" id="pageSetting">S</div>
+    <div class="toolbar-item" id="pageTimer">T</div>
+    <div class="toolbar-item" id="pageSetting">S</div>
+  </div>
+  <div class="container">
+    <div class="page" id="page0" style="z-index: 0;">
+      <ol class="list" id="taskList">
+      </ol>
     </div>
-  </body>
+    <div class="page" id="page1" style="z-index: 1; opacity: 0; pointer-events: none; transform: scale(1.4); filter: blur(4px);
+        flex-direction: column;">
+      <div class="clock" style="margin-bottom: 16px;">
+        <script>
+          function formatClock(input) {
+            let value = parseInt(input.value);
+            input.value = input.value == '' ? '00' : value.toString().substr(value.toString().length - 2, 2);
+            if (value > 59) {
+              input.value = '59';
+              return;
+            }
+            if (value.toString().length == 1) {
+              input.value = '0' + value.toString();
+            }
+          }
+        </script>
+        <input type="number" oninput="formatClock(this)" value="10" class="clock-input" id="clock-min"></input>
+        <label style="width: 16px; font-size: 3em; align-self: center; translate: 0 -15%;">:</label>
+        <input type="number" oninput="formatClock(this)" value="00" class="clock-input" id="clock-s"></input>
+      </div>
+      <div class="button-round icons" style="font-size: 2em; width: 48px; height: 48px;" id="timerPlay">p</div>
+    </div>
+    <div class="page" id="page2" style="z-index: 1; opacity: 0; pointer-events: none; transform: scale(1.4); filter: blur(4px);
+      flex-direction: column;">
+      <div style="position: fixed; inset-inline: 0;">
+        <div class="card" style="padding-left: 18px; margin-bottom: 8px;">
+          <div>
+            <label class="text" style="font-weight: 600; font-size: 1.6em; line-height: 150%;">TimeUp</label>
+            <img src="assets/icon.ico" style="position: fixed; right: 16px; height: 24%;">
+          </div>
+          <div style="color: #742626;">
+            <label class="text" style="font-weight: 600;">DEV </label>
+            <label class="text" style="font-weight: 600;">0.0.9</label>
+          </div>
+        </div>
+        <div id="config1" class="card" style="padding: 2px; display: grid; grid-template-columns: auto 48px auto; height: 48px; gap: 2px;">
+          <button style="border-radius: 10px 8px 8px 10px;">浅色</button>
+          <button class="active" style="border-radius: 8px; font-family: 'Icons'; font-size: 1.4em; padding: 0;">※</button>
+          <button style="border-radius: 8px 10px 10px 8px;">深色</button>
+        </div>
+      </div>
+    </div>
+    <div id="PagesMask" style="position: absolute; inset: 0; transition: all 0.16s; pointer-events: none; z-index: 2;">
+    </div>
+    <div class="card solidback" id="FloatPage-TaskGroupList" style="transition: opacity 0.2s, translate 0.2s;; height: 58px; width: calc(100% - 18px); opacity: 0; filter: blur(4px);
+        padding: 0 1px; border-radius: 11px; pointer-events: none; position: absolute; z-index: 3; overflow: hidden;
+        box-shadow: 0 4px 8px 0 #0f0f0f2d, 0 -1px 0 0 #f6f6f62d, 0 1px 0 0 #0f0f0f2d;">
+      <div style="transition: all 0.2s;">
+        <div id="TaskGroupList"
+          style="margin: 1px; width: calc(100% - 2px); overflow: hidden; border-radius: 9px; transition: scale 0.2s, opacity 0.2s;">
+          <ol style="display: flex; flex-direction: row; width: 100%; transition: translate 0.1s; translate: 0;">
+            <button id="task-rename"
+              style="height: 56px; width: 56px; align-items: center; justify-content: center; display: flex; flex-direction: column;">
+              <label style="font-family: Icons; font-size: 1.6em;">r</label>
+              <label style="margin-inline: -8px; font-size: 0.8em;">命名</label>
+            </button>
+            <button id="task-switch"
+              style="height: 56px; width: 56px; align-items: center; justify-content: center; display: flex; flex-direction: column;">
+              <label style="font-family: Icons; font-size: 1.6em;">~</label>
+              <label style="margin-inline: -8px; font-size: 0.8em;">切换</label>
+            </button>
+            <button id="task-import"
+              style="height: 56px; width: 56px; align-items: center; justify-content: center; display: flex; flex-direction: column;">
+              <label style="font-family: Icons; font-size: 1.6em;">^</label>
+              <label style="margin-inline: -8px; font-size: 0.8em;">导入</label>
+            </button>
+            <button id="task-mode" disabled
+              style="height: 56px; width: 56px; align-items: center; justify-content: center; display: flex; flex-direction: column;">
+              <label style="font-family: Icons; font-size: 1.6em;">@</label>
+              <label style="margin-inline: -8px; font-size: 0.8em;">模式</label>
+            </button>
+            <button id="task-setting" disabled
+              style="height: 56px; width: 56px; align-items: center; justify-content: center; display: flex; flex-direction: column;">
+              <label style="font-family: Icons; font-size: 1.6em;">*</label>
+              <label style="margin-inline: -8px; font-size: 0.8em;">设置</label>
+            </button>
+          </ol>
+        </div>
+        <div id="rename-box"
+          style="display: flex; align-items: center; justify-content: center; height: 58px; transition: translate 0.2s;">
+          <input id="rename-input" disabled class="inputBox" style="font-size: 1.2em; width: calc(100% - 36px);">
+        </div>
+        <div id="taskswitch-box" style="position: absolute; margin: 7px;">
+          <ol id="taskswitch-list">
+            <li>
+              <label>你好</label>
+            </li>
+          </ol>
+        </div>
+      </div>
+    </div>
+  </div>
+  <div id="GlobalMask" style="position: absolute; inset: 0; transition: all 0.16s; pointer-events: none; z-index: 9;">
+  </div>
+  <div data-tauri-drag-region class="titlebar" style="z-index: 10;">
+    <label class="titlebar-title" id="Titlebar-Title">任务列表</label>
+    <div class="titlebar-button" id="titlebar-minimize" style="
+        font-size: 0.8em;">
+      &#x2014;
+    </div>
+    <div class="titlebar-closebutton" id="titlebar-close">
+      &#x2715;
+    </div>
+  </div>
+</body>
+
 </html>

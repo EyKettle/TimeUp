@@ -1,10 +1,8 @@
 use std::fs::File;
 use std::io::prelude::*;
 use std::sync::OnceLock;
-
 use serde::{Deserialize, Serialize};
 
-// static const for file path
 static FILE_PATH: OnceLock<std::path::PathBuf> = OnceLock::new();
 
 static mut TITLE: String = String::new();
@@ -141,11 +139,11 @@ pub fn save(title: String, tasks: Vec<Task>) -> Option<(bool, String)> {
             match file.write_all(contents.as_bytes()) {
                 Ok(_) => {
                     println!("Save:\n{}", contents);
-                    return Some((true, contents));
+                    Some((true, contents))
                 },
                 Err(e) => {
                     println!("Error saving file: {}", e);
-                    return Some((false, e.to_string()));
+                    Some((false, e.to_string()))
                 }
             }
         },
@@ -156,16 +154,16 @@ pub fn save(title: String, tasks: Vec<Task>) -> Option<(bool, String)> {
                 Ok(mut file) => match file.write_all(contents.as_bytes()) {
                     Ok(_) => {
                         println!("Create file and save:\n{}", contents);
-                        return Some((true, contents));
+                        Some((true, contents))
                     },
                     Err(e) => {
                         println!("Error creating file: {}", e);
-                        return Some((false, e.to_string()));
+                        Some((false, e.to_string()))
                     },
                 },
                 Err(e) => {
                     println!("Error creating file: {}", e);
-                    return Some((false, e.to_string()));
+                    Some((false, e.to_string()))
                 },
             }
         }

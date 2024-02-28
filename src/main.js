@@ -13,7 +13,11 @@ document
     appWindow.close();
   });
 
-let audios = ['assets/audio/TaskFinish.wav', 'assets/audio/TimeFinish.wav'];
+document.addEventListener('contextmenu', e => {
+  e.preventDefault()
+})
+
+const audios = ['assets/audio/TaskFinish.wav', 'assets/audio/TimeFinish.wav'];
 function audio_play(index) {
   var audio = document.createElement('audio');
   audio.src = audios[index];
@@ -66,6 +70,7 @@ document.addEventListener('keydown', async function (event) {
     }
     if (event.ctrlKey && event.key == 'ArrowUp') {
       event.preventDefault();
+      colormode_switch('light')
       if (unnameTasks <= 0) {
         return;
       }
@@ -83,6 +88,7 @@ document.addEventListener('keydown', async function (event) {
     }
     if (event.ctrlKey && event.key == 'ArrowDown') {
       event.preventDefault();
+      colormode_switch('dark')
       if (unnameTasks <= 0) {
         return;
       }
@@ -116,7 +122,7 @@ function task_add(taskname = "", isFinished) {
   icon.style.pointerEvents = 'none';
   icon.textContent = "0";
   let task = document.createElement('input');
-  task.classList.add('task-input');
+  task.classList.add('inputBox');
   task.value = taskname;
   task.addEventListener('keydown', nameup);
   task.addEventListener('keydown', function (event) {
@@ -172,7 +178,7 @@ function task_add(taskname = "", isFinished) {
   menuDel.classList.add('button-flat');
   menuDel.addEventListener('click', async function () {
     item.pointerEvents = 'none';
-    item.style.transform = 'scale(0.6)';
+    item.style.transform = 'scale(0.8)';
     item.style.filter = 'blur(8px)';
     item.style.opacity = '0';
     await new Promise(resolve => setTimeout(resolve, 250));
@@ -219,9 +225,9 @@ function task_add(taskname = "", isFinished) {
       event.preventDefault();
       if (task.disabled) {
         event.target.children[0].style.opacity = '0';
-        event.target.children[0].style.filter = 'blur(4px)';
+        event.target.children[0].style.filter = 'blur(8px)';
         event.target.children[1].style.opacity = '0';
-        event.target.children[1].style.filter = 'blur(4px)';
+        event.target.children[1].style.filter = 'blur(8px)';
         event.target.lastElementChild.style.opacity = '1';
         event.target.lastElementChild.style.transform = 'scale(1)';
         event.target.lastElementChild.style.pointerEvents = 'unset';
@@ -240,16 +246,16 @@ function task_add(taskname = "", isFinished) {
   data_save();
 }
 
-let page0 = document.getElementById('page0');
-let page1 = document.getElementById('page1');
-let page2 = document.getElementById('page2');
+const page0 = document.getElementById('page0');
+const page1 = document.getElementById('page1');
+const page2 = document.getElementById('page2');
 page0.addEventListener('wheel', function (event) {
   event.stopPropagation();
 })
 document.getElementById('taskAdd').addEventListener('click', function () {
   task_add();
 });
-let toolbarTimer = document.getElementById('pageTimer');
+const toolbarTimer = document.getElementById('pageTimer');
 toolbarTimer.addEventListener('click', async function () {
   if (toolbarSetting.textContent == "R") {
     page1.style.opacity = '1';
@@ -258,7 +264,7 @@ toolbarTimer.addEventListener('click', async function () {
     page1.style.pointerEvents = 'unset';
     page2.style.pointerEvents = 'none';
     page1.style.translate = '0 0';
-    page2.style.translate = '100% 0'
+    page2.style.translate = 'calc(100% + 16px) 0'
     toolbarSetting.style.color = 'unset';
     toolbarSetting.textContent = "S"
     toolbarTimer.style.color = '#396cd8';
@@ -269,15 +275,15 @@ toolbarTimer.addEventListener('click', async function () {
       toolbarTimer.style.color = '#396cd8';
       toolbarTimer.textContent = "U"
       page0.style.opacity = '0';
-      page0.style.transform = 'scale(0.6)';
-      page0.style.filter = 'blur(4px)';
+      page0.style.transform = 'scale(0.8)';
+      page0.style.filter = 'blur(8px)';
       page0.style.pointerEvents = 'none';
       page1.style.opacity = '1';
       page1.style.transform = 'scale(1)';
       page1.style.filter = 'blur(0)';
       page1.style.pointerEvents = 'unset';
       page1.style.translate = '0 0';
-      page2.style.translate = '100% 0'
+      page2.style.translate = 'calc(100% + 16px) 0'
     }
     else {
       toolbarTimer.style.color = 'unset';
@@ -288,12 +294,12 @@ toolbarTimer.addEventListener('click', async function () {
       page0.style.pointerEvents = 'unset';
       page1.style.opacity = '0';
       page1.style.transform = 'scale(1.4)';
-      page1.style.filter = 'blur(4px)';
+      page1.style.filter = 'blur(8px)';
       page1.style.pointerEvents = 'none';
     }
   }
 });
-let toolbarSetting = document.getElementById('pageSetting');
+const toolbarSetting = document.getElementById('pageSetting');
 toolbarSetting.addEventListener('click', async function () {
   if (toolbarTimer.textContent == "U") {
     page2.style.opacity = '1';
@@ -313,8 +319,8 @@ toolbarSetting.addEventListener('click', async function () {
       toolbarSetting.style.color = '#396cd8';
       toolbarSetting.textContent = "R"
       page0.style.opacity = '0';
-      page0.style.transform = 'scale(0.6)';
-      page0.style.filter = 'blur(4px)';
+      page0.style.transform = 'scale(0.8)';
+      page0.style.filter = 'blur(8px)';
       page0.style.pointerEvents = 'none';
       page2.style.opacity = '1';
       page2.style.transform = 'scale(1)';
@@ -332,14 +338,14 @@ toolbarSetting.addEventListener('click', async function () {
       page0.style.pointerEvents = 'unset';
       page2.style.opacity = '0';
       page2.style.transform = 'scale(1.4)';
-      page2.style.filter = 'blur(4px)';
+      page2.style.filter = 'blur(8px)';
       page2.style.pointerEvents = 'none';
     }
   }
 });
 
-let clockMin = document.getElementById('clock-min');
-let clockS = document.getElementById('clock-s');
+const clockMin = document.getElementById('clock-min');
+const clockS = document.getElementById('clock-s');
 clockMin.addEventListener('keyup', input_lostFocus);
 clockS.addEventListener('keyup', input_lostFocus);
 
@@ -402,8 +408,8 @@ function timerStop() {
   clearInterval(timerCounter);
 }
 
-let notifiContent = document.getElementById('notifi-content')
-let notifiBack = document.getElementById('notifi-back');
+const notifiContent = document.getElementById('notifi-content')
+const notifiBack = document.getElementById('notifi-back');
 document
   .getElementById('notifi-check')
   .addEventListener('click', function () {
@@ -414,7 +420,7 @@ document
     notifiContent.style.pointerEvents = 'none';
   });
 
-let tipbox = document.getElementById('tipbox');
+const tipbox = document.getElementById('tipbox');
 window.tip_showup = function (isShow = true) {
   if (isShow) {
     tipbox.style.transform = 'translateY(0px)';
@@ -429,10 +435,11 @@ window.tip_showup = function (isShow = true) {
 
 let data_canchange = false;
 
-invoke('datatest_read').then(result => {
+invoke('datatest_read').then(async result => {
   if (result) {
     listbox.innerHTML = '';
     document.getElementById('Titlebar-Title').textContent = result[0];
+    await new Promise(resolve => setTimeout(resolve, 100));
     result[1].forEach(e => {
       task_add(e.description, e.completed == 'Completed');
       nameup(listbox.lastElementChild.children[1].dispatchEvent(new KeyboardEvent(
@@ -461,3 +468,69 @@ function data_save() {
     })
   }
 }
+
+//#region 任务组管理
+const Mask = document.getElementById('PagesMask')
+const FloatList = document.getElementById('FloatPage-TaskGroupList')
+FloatList.addEventListener('keydown', e => {
+  if (e.key == 'Tab') e.preventDefault()
+})
+document.getElementById('Titlebar-Title').addEventListener('click', () => {
+  if (FloatList.style.translate == '0px 48px') {
+    FloatList.style.translate = '0'
+    FloatList.style.opacity = '0'
+    FloatList.style.filter = 'blur(8px)'
+    FloatList.style.pointerEvents = 'none'
+    Mask.style.backgroundColor = 'transparent'
+    Mask.style.pointerEvents = 'none'
+  }
+  else {
+    FloatList.style.translate = '0px 48px'
+    FloatList.style.opacity = '1'
+    FloatList.style.filter = 'blur(0)'
+    FloatList.style.pointerEvents = 'auto'
+    Mask.style.backgroundColor = '#0003'
+    Mask.style.pointerEvents = 'auto'
+  }
+})
+const TaskFncs = document.getElementById('TaskGroupList')
+TaskFncs.addEventListener('mousewheel', e => {
+  // TaskFncs.scrollLeft += -e.wheelDelta * 0.1;
+  var x = (parseInt(TaskFncs.firstElementChild.style.translate) || 0) + e.wheelDelta * 0.2
+  if (x > 0) x = 0
+  if (x < -TaskFncs.firstElementChild.children.length * 56 + FloatList.offsetWidth - 4) x = -TaskFncs.firstElementChild.children.length * 56 + FloatList.offsetWidth - 4;
+  TaskFncs.firstElementChild.style.translate = x + 'px'
+})
+
+document.getElementById('task-rename').addEventListener('click', async () => {
+  var renameBox = document.getElementById('rename-box')
+  TaskFncs.style.scale = '0.8'
+  TaskFncs.style.opacity = '0'
+  TaskFncs.parentElement.style.translate = '0 -' + FloatList.offsetHeight + 'px'
+  renameBox.firstElementChild.value = document.getElementById('Titlebar-Title').textContent
+  renameBox.firstElementChild.disabled = false
+  await new Promise(resolve => setTimeout(resolve, 200));
+  renameBox.firstElementChild.focus()
+})
+document.getElementById('rename-input').addEventListener('keyup', e => {
+  if (e.key == 'Escape') {
+    TaskFncs.style.scale = '1'
+    TaskFncs.style.opacity = '1'
+    TaskFncs.parentElement.style.translate = '0'
+  }
+  if (e.key == 'Enter') {
+    TaskFncs.style.scale = '1'
+    TaskFncs.style.opacity = '1'
+    TaskFncs.parentElement.style.translate = '0'
+    document.getElementById('Titlebar-Title').textContent = document.getElementById('rename-input').value
+    data_save()
+  }
+})
+
+document.getElementById('task-switch').addEventListener('click', () => {
+
+})
+
+await new Promise(resolve => setTimeout(resolve, 1));
+document.documentElement.style.transition = 'color 0.25s, background-color 0.25s'
+//#endregion
