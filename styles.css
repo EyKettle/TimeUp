@@ -1,0 +1,200 @@
+@font-face {
+  font-family: "Icons";
+  font-size: 14px;
+  font-weight: 400;
+  src: url(/public/fonts/TimeUpIcons.ttf);
+}
+
+.logo.yew:hover {
+  filter: drop-shadow(0 0 2em #20a88a);
+}
+
+:root {
+  font-family: Inter, Avenir, Helvetica, Arial, sans-serif;
+  font-size: 16px;
+  line-height: 24px;
+  font-weight: 400;
+
+  color: #0f0f0fd6;
+  background-color: transparent;
+
+  font-synthesis: none;
+  text-rendering: optimizeLegibility;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+  -webkit-text-size-adjust: 100%;
+
+  user-select: none;
+}
+
+.container {
+  margin: 0;
+  margin-top: 40px;
+  padding-top: 10vh;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  text-align: center;
+}
+
+.titlebar {
+  display: flex;
+  justify-content: end;
+  position: absolute;
+  top: 0;
+  inset-inline: 0;
+  height: 40px;
+}
+
+.titlebar-title {
+  flex-grow: 1;
+  padding-left: 8px;
+  display: flex;
+  align-items: center;
+  justify-content: left;
+  pointer-events: none;
+}
+
+.titlebar-title>label {
+  padding-inline: 8px;
+  border-radius: 4px;
+  pointer-events: auto;
+  transition: background-color 0.16s, box-shadow 0.25s;
+}
+
+.titlebar-title>label:hover {
+  background-color: #0f0f0f10;
+  box-shadow: 0 1px 0 0 #0f0f0f2d;
+}
+
+.titlebar-title>label:active {
+  background-color: #0f0f0f20;
+  box-shadow: 0 1px 0 0 #0f0f0f2d;
+}
+
+.titlebar-button,
+.titlebar-closebutton {
+  font-family: "Icons";
+  font-size: 14px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+
+  transition: background-color 0.16s;
+}
+
+.titlebar-button {
+  width: 48px;
+}
+
+.titlebar-button:hover {
+  background-color: #0f0f0f10;
+}
+
+.titlebar-button:active {
+  background-color: #0f0f0f20;
+}
+
+.titlebar-closebutton {
+  width: 56px;
+}
+
+.titlebar-closebutton:hover {
+  color: white;
+  background-color: red;
+}
+
+.titlebar-closebutton:active {
+  color: white;
+  background-color: #ff5e5e;
+}
+
+.logo {
+  height: 6em;
+  padding: 1.5em;
+  will-change: filter;
+  transition: 0.75s;
+}
+
+.logo.tauri:hover {
+  filter: drop-shadow(0 0 2em #24c8db);
+}
+
+.row {
+  display: flex;
+  justify-content: center;
+}
+
+a {
+  font-weight: 500;
+  color: #646cff;
+  text-decoration: inherit;
+}
+
+a:hover {
+  color: #535bf2;
+}
+
+h1 {
+  text-align: center;
+}
+
+button {
+  outline: none;
+  border: 1px solid #0f0f0f1d;
+  box-shadow: 0 1px 0 0 #0f0f0f4d;
+  cursor: pointer;
+  font-size: 1em;
+  border-radius: 8px;
+  background-color: transparent;
+  transition: background-color 0.16s;
+}
+
+button:hover {
+  background-color: #0f0f0f10;
+}
+
+button:active {
+  background-color: #0f0f0f20;
+}
+
+#greet-input {
+  margin-right: 5px;
+}
+
+.dark {
+  color: #f6f6f6d6;
+}
+
+.dark button {
+  color: #f6f6f6d6;
+  border: 1px solid #f6f6f61d;
+}
+
+.dark button:hover {
+  background-color: #f6f6f60d;
+}
+
+.dark button:active {
+  background-color: #f6f6f61d;
+}
+
+.dark .titlebar-title>label:hover {
+  background-color: #f6f6f610;
+}
+
+.dark .titlebar-title>label:active {
+  background-color: #f6f6f620;
+}
+
+.dark .titlebar-button:hover {
+  background-color: #f6f6f60d;
+}
+
+.dark .titlebar-button:active {
+  background-color: #f6f6f61d;
+}
+
+.dark .titlebar-closebutton:active {
+  background-color: #c00000;
+}
