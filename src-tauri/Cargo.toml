@@ -19,6 +19,7 @@ dirs = "5.*"
 window-shadows = "0.2.*"
 window-vibrancy = "0.4.*"
 wasm-bindgen = "0.2"
+lazy_static = "1.4"
 
 [features]
 # this feature is used for production builds or when `devPath` points to the filesystem

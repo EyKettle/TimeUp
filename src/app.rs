@@ -2,7 +2,8 @@ mod custom_components;
 use serde::{Deserialize, Serialize};
 use serde_wasm_bindgen::{from_value, to_value};
 use wasm_bindgen::prelude::*;
-use web_sys::{window, MediaQueryList};
+use wasm_bindgen_futures::spawn_local;
+use web_sys::{console::log_1, window, MediaQueryList};
 use yew::prelude::*;
 
 #[derive(Serialize, Deserialize, Debug, Clone, PartialEq)]
@@ -17,6 +18,11 @@ pub struct ThemeConfig {
 }
 
 #[derive(Serialize, Deserialize)]
+pub struct WindoweffectConfig {
+    ifclear: bool,
+}
+
+#[derive(Serialize, Deserialize)]
 pub struct PrintlnConfig {
     msg: String,
 }
@@ -24,128 +30,184 @@ pub struct PrintlnConfig {
 #[wasm_bindgen]
 extern "C" {
     #[wasm_bindgen(js_namespace = ["window", "__TAURI__", "tauri"])]
-    fn invoke(cmd: &str, args: JsValue) -> JsValue;
+    async fn invoke(cmd: &str, args: JsValue) -> JsValue;
 }
 
-struct App {
-
+#[function_component]
+pub fn App() -> Html {
+    html! {
+        <AppUI />
+    }
+}
+struct AppUI {
+    colormode: String,
+    darkmode: bool,
+    window_effect: String,
 }
 
-impl Component for App {
-    type Message = ();
+enum Msg {
+    WindoweffectChanged,
+    WindoweffectChange(String),
+    ColormodeChanged,
+    ColormodeChange(bool),
+}
+
+impl Component for AppUI {
+    type Message = Msg;
     type Properties = ();
     fn create(ctx: &Context<Self>) -> Self {
-        let configs = use_state(|| Config {
-            version: "0.0.0".to_string(),
-            colormode: "light".to_string(),
-        });
-        use_effect({
-            let configs = configs.clone();
-            move || {
-                let config: Config = from_value(invoke("config_load", JsValue::null())).unwrap();
-                configs.set(config);
-                || {}
-            }
-        });
-    
-        let window = window().unwrap();
-        let isdark = if configs.colormode == "auto".to_string() {
-            invoke(
-                "tauri_println",
-                to_value(&PrintlnConfig {
-                    msg: format!("Initialize colormode by [auto].").to_string(),
-                })
-                .unwrap(),
-            );
-            let result = window
-                .match_media("(prefers-color-scheme: dark)")
-                .unwrap()
-                .unwrap()
-                .matches();
-            result
-        } else {
-            invoke(
+        // colormode 0 - check system theme
+        let dark_mode = window()
+            .unwrap()
+            .match_media("(prefers-color-scheme: dark)")
+            .unwrap()
+            .unwrap();
+        let darkmode = dark_mode.matches();
+        spawn_local(async move {
+            let _ = invoke(
                 "tauri_println",
                 to_value(&PrintlnConfig {
                     msg: format!(
-                        "Initialize colormode by [config]. colormode = {}",
-                        configs.colormode
-                    )
-                    .to_string(),
+                        "[INFO] Get dark mode: {}",
+                        if darkmode {
+                            "Dark".to_string()
+                        } else {
+                            "Light".to_string()
+                        }
+                    ),
                 })
                 .unwrap(),
-            );
-            configs.colormode == "dark".to_string()
-        };
-    
-        let color_mode: UseStateHandle<String> = use_state(|| {
-            invoke(
-                "tauri_println",
-                to_value(&PrintlnConfig {
-                    msg: format!("Initialize container colormode. isdark: {isdark}").to_string(),
-                })
-                .unwrap(),
-            );
-            invoke(
-                "colormode_change",
-                to_value(&ThemeConfig { isdark: isdark }).unwrap(),
-            );
-            if isdark {
-                "container dark".to_string()
-            } else {
-                "container".to_string()
-            }
+            )
+            .await;
         });
-    
-        let colormode_change = {
-            let color_mode = color_mode.clone();
-            move |_| {
-                let mut args = ThemeConfig { isdark: isdark };
-                if color_mode.as_ref() == "container".to_string() {
-                    color_mode.set("container dark".to_string());
-                    args.isdark = true;
-                } else {
-                    color_mode.set("container".to_string());
-                    args.isdark = false;
-                }
-                invoke("colormode_change", to_value(&args).unwrap());
-            }
-        };
-    
-        let closure = Closure::wrap(Box::new({
-            let color_mode = color_mode.clone();
-            move |event: MediaQueryList| {
-                if event.matches() {
-                    let args = ThemeConfig { isdark: true };
-                    color_mode.set("container dark".to_string());
-                    invoke("colormode_change", to_value(&args).unwrap());
-                } else {
-                    let args = ThemeConfig { isdark: false };
-                    color_mode.set("container".to_string());
-                    invoke("colormode_change", to_value(&args).unwrap());
-                }
-            }
+        // colormode 1 - system theme changed event binding
+        let colormodechange = ctx.link().callback(Msg::ColormodeChange);
+        let dark_mode_changed = Closure::wrap(Box::new(move |event: MediaQueryList| {
+            let status = event.matches();
+            spawn_local(async move {
+                let _ = invoke(
+                    "tauri_println",
+                    to_value(&PrintlnConfig {
+                        msg: format!(
+                            "[INFO] event match status: {}",
+                            if status {
+                                "Dark".to_string()
+                            } else {
+                                "Light".to_string()
+                            }
+                        ),
+                    })
+                    .unwrap(),
+                )
+                .await;
+            });
+            colormodechange.emit(event.matches());
         }) as Box<dyn FnMut(_)>);
-        window
-            .match_media("(prefers-color-scheme: dark)")
-            .unwrap()
-            .unwrap()
-            .add_event_listener_with_callback("change", closure.as_ref().unchecked_ref())
-            .expect("Failed to add event listener");
-        closure.forget();
-        false
+        dark_mode
+            .add_event_listener_with_callback("change", dark_mode_changed.as_ref().unchecked_ref())
+            .unwrap();
+        dark_mode_changed.forget();
+        // Get window effect.
+        let window_effect = /*invoke("windoweffect_get", JsValue::NULL).as_string().unwrap()*/ "Mica".to_string();
+        AppUI {
+            colormode: "auto".to_string(),
+            darkmode,
+            window_effect,
+        }
+    }
+    fn update(&mut self, ctx: &Context<Self>, msg: Self::Message) -> bool {
+        match msg {
+            Msg::ColormodeChanged => {
+                if self.colormode == "auto".to_string() {
+                    self.darkmode = !self.darkmode;
+                    let darkmode = self.darkmode.clone();
+                    spawn_local(async move {
+                        let _ = invoke(
+                            "colormode_change",
+                            to_value(&ThemeConfig { isdark: darkmode }).unwrap(),
+                        )
+                        .await;
+                    });
+                    log_1(&JsValue::from_str(
+                        format!(
+                            "[INFO] Colormode changed to {}",
+                            if self.darkmode {
+                                "Dark".to_string()
+                            } else {
+                                "Light".to_string()
+                            }
+                        )
+                        .as_str(),
+                    ));
+                }
+            }
+            Msg::ColormodeChange(isdark) => {
+                if self.colormode == "auto".to_string() {
+                    self.darkmode = isdark;
+                    let darkmode = self.darkmode.clone();
+                    spawn_local(async move {
+                        let _ = invoke(
+                            "colormode_change",
+                            to_value(&ThemeConfig { isdark: darkmode }).unwrap(),
+                        )
+                        .await;
+                    });
+                    log_1(&JsValue::from_str(
+                        format!(
+                            "[INFO] Colormode changed to {}",
+                            if self.darkmode {
+                                "Dark".to_string()
+                            } else {
+                                "Light".to_string()
+                            }
+                        )
+                        .as_str(),
+                    ));
+                }
+            }
+            Msg::WindoweffectChanged => {
+                let link = ctx.link().clone();
+                spawn_local(async move {
+                    let result = invoke(
+                        "windoweffect_change",
+                        to_value(&WindoweffectConfig { ifclear: false }).unwrap(),
+                    )
+                    .await
+                    .as_string()
+                    .unwrap();
+                    link.send_message(Msg::WindoweffectChange(result))
+                });
+            }
+            Msg::WindoweffectChange(target) => {
+                self.window_effect = target;
+            }
+        }
+        true
     }
     fn view(&self, ctx: &Context<Self>) -> Html {
+        let colormode = if self.darkmode {
+            "dark".to_string()
+        } else {
+            "light".to_string()
+        };
+
+        let colormode_change = ctx.link().callback(|_| Msg::ColormodeChanged);
+        let windoweffect_change = ctx.link().callback(|_| Msg::WindoweffectChanged);
+
+        let mainclass = format!("container {}", &colormode);
+        let button_name = format!(
+            "切换到 {}效果",
+            if self.window_effect == "Mica".to_string() {
+                "亚克力".to_string()
+            } else {
+                "云母".to_string()
+            }
+        );
         html! {
-            <main class={&*color_mode}>
+            <main class={&mainclass}>
                 <div class="row">
-                    <a href="https://tauri.app" target="_blank">
-                        <img src="public/tauri.svg" class="logo tauri" alt="Tauri logo"/>
-                    </a>
-                    <a href="https://yew.rs" target="_blank">
-                        <img src="public/yew.png" class="logo yew" alt="Yew logo"/>
-                    </a>
                     <button onclick={colormode_change}>{"切换颜色模式"}</button>
+                    <button onclick={windoweffect_change}>{button_name}</button>
                 </div>
                 <custom_components::TitleBar />
             </main>

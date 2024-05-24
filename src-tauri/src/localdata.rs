@@ -1,7 +1,8 @@
+use lazy_static::lazy_static;
 use serde::{Deserialize, Serialize};
 use std::fs::{metadata, read_to_string, write, File};
 use std::io::prelude::*;
-use std::sync::OnceLock;
+use std::sync::{Arc, Mutex, OnceLock};
 use toml;
 
 #[derive(Serialize, Deserialize, Debug, Clone)]
@@ -21,6 +22,19 @@ static FILE_PATH: OnceLock<std::path::PathBuf> = OnceLock::new();
 
 static mut TITLE: String = String::new();
 static mut TASKS: Vec<Task> = Vec::new();
+
+#[derive(Debug)]
+pub struct WindowState {
+    pub effect: String,
+    pub darkmode: bool,
+}
+
+lazy_static! {
+    pub static ref WINDOW_STATE: Arc<Mutex<WindowState>> = Arc::new(Mutex::new(WindowState {
+        effect: "None".to_string(),
+        darkmode: false,
+    }));
+}
 
 #[derive(Debug, Clone, Serialize, Deserialize, PartialEq, Eq)]
 pub enum StaskStatus {
@@ -49,7 +63,7 @@ pub struct Task {
     outdate: Option<bool>,
 }
 
-pub fn init() {
+pub fn init(windowstate: WindowState) {
     let _ = FILE_PATH.set("timeup.tasks.txt".into());
     // let _ = FILE_PATH.set(
     //     dirs::desktop_dir()
@@ -67,6 +81,11 @@ pub fn init() {
         };
         CONFIG_PATH = "timeup.config.toml".to_string();
     }
+
+    let mut state = WINDOW_STATE.lock().unwrap();
+    state.effect = windowstate.effect;
+    state.darkmode = windowstate.darkmode;
+    println!("[INFO] Window state initialized:\n{:?}", state);
 }
 
 pub fn test_read() -> Option<(String, Vec<Task>)> {
