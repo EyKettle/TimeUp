@@ -37,14 +37,15 @@
   display: flex;
   justify-content: end;
   position: absolute;
-  top: 0;
-  inset-inline: 0;
+  top: 5px;
+  inset-inline: 4px;
   height: 40px;
 }
 
 .titlebar-title {
   flex-grow: 1;
-  padding-left: 8px;
+  margin-top: -5px;
+  padding-left: 4px;
   display: flex;
   align-items: center;
   justify-content: left;
@@ -52,8 +53,9 @@
 }
 
 .titlebar-title>label {
-  padding-inline: 8px;
-  border-radius: 4px;
+  padding-inline: 12px;
+  padding-block: 4px;
+  border-radius: 6px;
   pointer-events: auto;
   transition: background-color 0.16s, box-shadow 0.25s;
 }
@@ -68,12 +70,13 @@
 
 .titlebar-button,
 .titlebar-closebutton {
+  margin-top: -4px;
   font-family: "Icons";
   font-size: 14px;
   display: flex;
   align-items: center;
   justify-content: center;
-
+  
   transition: background-color 0.16s;
 }
 
@@ -90,6 +93,7 @@
 }
 
 .titlebar-closebutton {
+  margin-right: -4px;
   width: 56px;
 }
 

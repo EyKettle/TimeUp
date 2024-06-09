@@ -43,13 +43,16 @@ struct AppUI {
     colormode: String,
     darkmode: bool,
     window_effect: String,
+    configs: Config,
 }
 
 enum Msg {
     WindoweffectChanged,
     WindoweffectChange(String),
-    ColormodeChanged,
-    ColormodeChange(bool),
+    DarkmodeChanged,
+    DarkmodeChange(bool),
+    ColormodeChange,
+    ConfigsChange(Config),
 }
 
 impl Component for AppUI {
@@ -81,7 +84,7 @@ impl Component for AppUI {
             .await;
         });
         // colormode 1 - system theme changed event binding
-        let colormodechange = ctx.link().callback(Msg::ColormodeChange);
+        let darkmodechange = ctx.link().callback(Msg::DarkmodeChange);
         let dark_mode_changed = Closure::wrap(Box::new(move |event: MediaQueryList| {
             let status = event.matches();
             spawn_local(async move {
@@ -101,23 +104,36 @@ impl Component for AppUI {
                 )
                 .await;
             });
-            colormodechange.emit(event.matches());
+            darkmodechange.emit(event.matches());
         }) as Box<dyn FnMut(_)>);
         dark_mode
             .add_event_listener_with_callback("change", dark_mode_changed.as_ref().unchecked_ref())
             .unwrap();
         dark_mode_changed.forget();
         // Get window effect.
-        let window_effect = /*invoke("windoweffect_get", JsValue::NULL).as_string().unwrap()*/ "Mica".to_string();
+        let link = ctx.link().clone();
+        spawn_local(async move {
+            let effect = invoke("windoweffect_get", JsValue::NULL)
+                .await
+                .as_string()
+                .unwrap();
+            link.send_message(Msg::WindoweffectChange(effect));
+            let config = from_value::<Config>(invoke("config_load", JsValue::NULL).await).unwrap();
+            link.send_message(Msg::ConfigsChange(config));
+        });
         AppUI {
             colormode: "auto".to_string(),
             darkmode,
-            window_effect,
+            window_effect: "Mica".to_string(),
+            configs: Config {
+                version: String::new(),
+                colormode: String::new(),
+            },
         }
     }
     fn update(&mut self, ctx: &Context<Self>, msg: Self::Message) -> bool {
         match msg {
-            Msg::ColormodeChanged => {
+            Msg::DarkmodeChanged => {
                 if self.colormode == "auto".to_string() {
                     self.darkmode = !self.darkmode;
                     let darkmode = self.darkmode.clone();
@@ -141,7 +157,7 @@ impl Component for AppUI {
                     ));
                 }
             }
-            Msg::ColormodeChange(isdark) => {
+            Msg::DarkmodeChange(isdark) => {
                 if self.colormode == "auto".to_string() {
                     self.darkmode = isdark;
                     let darkmode = self.darkmode.clone();
@@ -181,6 +197,43 @@ impl Component for AppUI {
             Msg::WindoweffectChange(target) => {
                 self.window_effect = target;
             }
+            Msg::ColormodeChange => match self.colormode.as_str() {
+                "auto" => ctx.link().send_message(Msg::DarkmodeChange(
+                    window()
+                        .unwrap()
+                        .match_media("(prefers-color-scheme: dark)")
+                        .unwrap()
+                        .unwrap()
+                        .matches(),
+                )),
+                "dark" => ctx.link().send_message(Msg::DarkmodeChange(true)),
+                _ => ctx.link().send_message(Msg::DarkmodeChange(false)),
+            },
+            Msg::ConfigsChange(target) => {
+                let text = target.clone();
+                spawn_local(async move {
+                    let _ = invoke(
+                        "tauri_println",
+                        to_value(&PrintlnConfig {
+                            msg: format!("[INFO] Config changed: {:?}", text),
+                        })
+                        .unwrap(),
+                    )
+                    .await;
+                });
+                self.configs = target;
+                if self.colormode != self.configs.colormode {
+                    self.colormode = self.configs.colormode.clone();
+                    ctx.link().send_message(Msg::ColormodeChange);
+                    if self.configs.colormode == "dark".to_string() {
+                        self.darkmode = true;
+                        ctx.link().send_message(Msg::DarkmodeChange(self.darkmode));
+                    } else if self.configs.colormode == "light".to_string() {
+                        self.darkmode = false;
+                        ctx.link().send_message(Msg::DarkmodeChange(self.darkmode));
+                    }
+                };
+            }
         }
         true
     }
@@ -191,7 +244,7 @@ impl Component for AppUI {
             "light".to_string()
         };
 
-        let colormode_change = ctx.link().callback(|_| Msg::ColormodeChanged);
+        let colormode_change = ctx.link().callback(|_| Msg::DarkmodeChanged);
         let windoweffect_change = ctx.link().callback(|_| Msg::WindoweffectChanged);
 
         let mainclass = format!("container {}", &colormode);

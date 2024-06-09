@@ -1,11 +1,9 @@
 // Prevents additional console window on Windows in release, DO NOT REMOVE!!
 #![cfg_attr(not(debug_assertions), windows_subsystem = "windows")]
 
-use std::sync::Mutex;
-
-use tauri::{Manager, State, Theme, Window};
+use tauri::{Manager, Theme, Window};
 use window_shadows::set_shadow;
-use window_vibrancy::{apply_acrylic, apply_mica, clear_acrylic, clear_mica, Color};
+use window_vibrancy::{apply_acrylic, apply_mica, clear_acrylic, clear_mica};
 mod localdata;
 
 // static mut app_handle: AppHandle = app;
@@ -71,8 +69,8 @@ async fn colormode_change(isdark: bool, window: Window) -> Result<bool, bool> {
             String::new()
         }
     );
-    if state.effect == "Mica".to_string() {
-        match apply_mica(&window, Some(isdark)) {
+    match state.effect.as_str() {
+        "Mica" => match apply_mica(&window, Some(isdark)) {
             Ok(()) => {
                 state.effect = "Mica".to_string();
                 Ok(true)
@@ -81,9 +79,25 @@ async fn colormode_change(isdark: bool, window: Window) -> Result<bool, bool> {
                 println!("[ERROR] Failed to apply Mica. Error info: {}", e);
                 Ok(false)
             }
-        }
-    } else {
-        Ok(false)
+        },
+        "Acrylic" => match apply_acrylic(
+            &window,
+            if isdark {
+                Some((32, 32, 32, 200))
+            } else {
+                Some((220, 220, 220, 200))
+            },
+        ) {
+            Ok(_) => {
+                state.effect = "Acrylic".to_string();
+                Ok(true)
+            }
+            Err(e) => {
+                println!("[ERROR] Failed to apply Acrylic. Error info: {}", e);
+                Ok(false)
+            }
+        },
+        _ => Ok(false),
     }
 }
 
@@ -116,10 +130,17 @@ async fn windoweffect_change(ifclear: bool, window: Window) -> String {
         match state.effect.as_str() {
             "Mica" => {
                 clear_mica(&window).unwrap();
-                match apply_acrylic(&window, None) {
+                match apply_acrylic(
+                    &window,
+                    if state.darkmode {
+                        Some((32, 32, 32, 200))
+                    } else {
+                        Some((220, 220, 220, 200))
+                    },
+                ) {
                     Ok(()) => {
                         println!(
-                            "[INFO] Changed colormode {} (Acrylic).",
+                            "[INFO] Changed colormode to Acrylic ({}).",
                             if state.darkmode {
                                 "Dark".to_string()
                             } else {
@@ -139,8 +160,12 @@ async fn windoweffect_change(ifclear: bool, window: Window) -> String {
                     Ok(()) => {
                         state.effect = "Mica".to_string();
                         println!(
-                            "[INFO] Changed colormode to Mica.\nStatus: {}",
-                            &state.effect
+                            "[INFO] Changed colormode to Mica ({}).",
+                            if state.darkmode {
+                                "Dark".to_string()
+                            } else {
+                                "Light".to_string()
+                            }
                         );
                     }
                     Err(e) => {
@@ -176,12 +201,9 @@ fn config_save() -> Result<(), String> {
 #[tauri::command]
 fn config_load() -> Result<localdata::Config, String> {
     match localdata::config_load() {
-        Ok(_) => {
-            let result = unsafe { localdata::CONFIGS.clone() };
-            Ok(result)
-        }
+        Ok(config) => Ok(config),
         Err(e) => {
-            println!("[ERROR] Cannot save config: {}", e);
+            println!("[ERROR] Cannot load config: {}", e);
             Err(e)
         }
     }
@@ -190,12 +212,29 @@ fn config_load() -> Result<localdata::Config, String> {
 fn main() {
     tauri::Builder::default()
         .setup(|app| {
-            let window = app.get_window("main").unwrap();
             let mut effect = "None".to_string();
-            let dark = window.theme().unwrap_or_else(|err| {
-                println!("Cannot get window theme: {}", err);
-                Theme::Light
-            }) == Theme::Dark;
+            let window = app.get_window("main").unwrap();
+            let dark: bool;
+            localdata::CONFIGS.lock().unwrap().version =
+                app.config().package.version.clone().unwrap().to_string();
+            match localdata::config_load() {
+                Ok(configs) => match configs.colormode.as_str() {
+                    "dark" => dark = true,
+                    "light" => dark = false,
+                    _ => {
+                        dark = window.theme().unwrap_or_else(|err| {
+                            println!("Cannot get window theme: {}", err);
+                            Theme::Light
+                        }) == Theme::Dark
+                    }
+                },
+                Err(_) => {
+                    dark = window.theme().unwrap_or_else(|err| {
+                        println!("Cannot get window theme: {}", err);
+                        Theme::Light
+                    }) == Theme::Dark
+                }
+            };
             set_shadow(&window, true).expect("Unsupported Platform!");
             match apply_mica(&window, Some(dark)) {
                 Ok(()) => {
@@ -207,7 +246,14 @@ fn main() {
                         "Failed to apply Mica, try to apply Acrylic. Error info: {}",
                         e
                     );
-                    match apply_acrylic(&window, None) {
+                    match apply_acrylic(
+                        &window,
+                        if dark {
+                            Some((32, 32, 32, 200))
+                        } else {
+                            Some((220, 220, 220, 200))
+                        },
+                    ) {
                         Ok(()) => {
                             effect = "Acrylic".to_string();
                             println!("Successfully applied Acrylic.");
@@ -216,7 +262,11 @@ fn main() {
                     }
                 }
             }
-            localdata::init(localdata::WindowState {
+            // Check colormode value
+
+            // Remeber to write path check code
+
+            localdata::assign_state(&localdata::WindowState {
                 effect,
                 darkmode: dark,
             });
