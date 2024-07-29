@@ -258,11 +258,13 @@ impl Component for AppUI {
         );
         html! {
             <main class={&mainclass}>
-                <div class="row">
+                <custom_components::TitleBar />
+                <div id="ces-area">
                     <button onclick={colormode_change}>{"切换颜色模式"}</button>
                     <button onclick={windoweffect_change}>{button_name}</button>
                 </div>
-                <custom_components::TitleBar />
+                <custom_components::TaskList />
+                <custom_components::TabBar />
             </main>
         }
     }

@@ -21,16 +21,21 @@
   -webkit-text-size-adjust: 100%;
 
   user-select: none;
+  overflow: hidden;
+}
+
+::-webkit-scrollbar {
+  display: none;
 }
 
 .container {
-  margin: 0;
-  margin-top: 40px;
-  padding-top: 10vh;
+  margin: 45px 8px 0 8px;
   display: flex;
   flex-direction: column;
   justify-content: center;
   text-align: center;
+  gap: 8px;
+  height: calc(100vh - 61px);
 }
 
 .titlebar {
@@ -76,7 +81,7 @@
   display: flex;
   align-items: center;
   justify-content: center;
-  
+
   transition: background-color 0.16s;
 }
 
@@ -107,25 +112,6 @@
   background-color: #ff5e5e;
 }
 
-.row {
-  display: flex;
-  justify-content: center;
-}
-
-a {
-  font-weight: 500;
-  color: #646cff;
-  text-decoration: inherit;
-}
-
-a:hover {
-  color: #535bf2;
-}
-
-h1 {
-  text-align: center;
-}
-
 button {
   outline: none;
   border: none;
@@ -145,8 +131,156 @@ button:active {
   background-color: #0f0f0f20;
 }
 
-#greet-input {
-  margin-right: 5px;
+.tabbar {
+  display: inline-flex;
+  font-family: "Icons";
+}
+
+.tabbar-button {
+  font-size: 32px;
+  height: 48px;
+  width: 48px;
+  border-radius: 8px;
+  align-content: center;
+  transition: background-color 0.16s, color 0.16s;
+}
+
+.tabbar-button:hover {
+  background-color: #0f0f0f10;
+}
+
+.tabbar-button:active {
+  background-color: #0f0f0f20;
+}
+
+.space {
+  flex-grow: 1;
+}
+
+.tasklist {
+  justify-content: center;
+  overflow: scroll;
+  flex-grow: 1;
+}
+
+.tasks {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.taskitem {
+  position: relative;
+  height: 40px;
+  background-color: #fffa;
+  border-radius: 8px;
+  transition: background-color 0.16s, margin-inline 0.2s;
+}
+
+.taskitem:hover {
+  background-color: white;
+}
+
+.taskitem:active {
+  background-color: #0f0f0f10;
+}
+
+.taskitem.Completed {
+  background-color: #fff0;
+  margin-inline: 6px;
+}
+
+.taskitem.Completed:active {
+  background-color: #0f0f0f10;
+}
+
+.taskitem>* {
+  position: absolute;
+  inset: 0;
+  align-content: center;
+}
+
+.taskitem-content {
+  display: flex;
+  justify-content: left;
+  align-items: center;
+}
+
+.taskitem-content label {
+  width: 40px;
+  height: 40px;
+  justify-content: center;
+  align-content: center;
+  font-size: 21px;
+}
+
+.taskitem:hover .taskitem-content label {
+  font-weight: bold;
+  padding-left: 1px;
+  margin-right: -1px;
+}
+
+.taskitem-content input {
+  outline: none;
+  border: none;
+  font-size: 18px;
+  border-radius: 4px;
+  padding: 0;
+  height: calc(100% - 24px);
+  width: calc(100% - 64px);
+  color: #0f0f0fd6;
+  box-shadow: 0 0 0 0px #396cd8;
+  background-color: #0000;
+  transition: box-shadow 0.16s, background-color 0.16s, padding 0.16s;
+}
+
+.taskitem-content input:hover {
+  box-shadow: 0 0 0 2px #396cd8;
+}
+
+.taskitem-content input:focus {
+  padding: 4px;
+  box-shadow: 0 0 0 4px #396cd8;
+  background-color: white;
+}
+
+.taskitem-content input:disabled {
+  box-shadow: none;
+  pointer-events: none;
+}
+
+.taskitem-menu {
+  background-color: #f6f6f60d;
+  border-radius: 8px;
+  animation: scalein 0.3s;
+}
+
+@keyframes scalein {
+  from {
+    scale: 0.6;
+    opacity: 0;
+    filter: blur(8px);
+  }
+
+  to {
+    scale: 1;
+    opacity: 1;
+    filter: blur(0);
+  }
+}
+
+@keyframes scaleout {
+  to {
+    scale: 0.6;
+    opacity: 0;
+    filter: blur(8px);
+  }
+
+  from {
+    scale: 1;
+    opacity: 1;
+    filter: blur(0);
+  }
 }
 
 .dark {
@@ -183,4 +317,40 @@ button:active {
 
 .dark .titlebar-closebutton:active {
   background-color: #c00000;
+}
+
+.dark .tabbar-button:hover {
+  background-color: #f6f6f60d;
+}
+
+.dark .tabbar-button:active {
+  background-color: #f6f6f61d;
+}
+
+.dark .taskitem {
+  background-color: #f6f6f60d;
+}
+
+.dark .taskitem:hover {
+  background-color: #f6f6f61d;
+}
+
+.dark .taskitem:active {
+  background-color: #0000002d;
+}
+
+.dark .taskitem.Completed {
+  background-color: #f6f6f600;
+} 
+
+.dark .taskitem.Completed:active {
+  background-color: #0000002d;
+}
+
+.dark .taskitem-content input {
+  color: #f6f6f6d6;
+}
+
+.dark .taskitem-content input:focus {
+  background-color: #0f0f0f4d;
 }
